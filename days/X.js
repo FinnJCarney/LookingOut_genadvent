@@ -35,6 +35,8 @@ class DayX extends Day {
 
         //iris + pupil variables
         this.irisColour = color(1, 1, 1);
+        
+        //should iris size / pupil size change at runtime?
         this.irisSize = 0;
         this.pupilSize = 0;
 
@@ -335,6 +337,10 @@ class DayX extends Day {
     }
 
     //SET FUNCTIONS
+    setIrisFrame()
+    {
+        
+    }
 
     setBlinkFrame()
     {

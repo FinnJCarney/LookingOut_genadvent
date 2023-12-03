@@ -12,7 +12,7 @@ class DayX extends Day {
         super();
         this.loop = true; // Set to true or false
 
-        this.controls = "Click to Blink || Shift to Hang || Up Arrow for Clock"; // Write any controls for interactivity if needed or leave blank
+        this.controls = "Click to Blink || Shift to Lock || Up Arrow for Clock"; // Write any controls for interactivity if needed or leave blank
         this.credits = "Made by Finn Carney"; // Replace with your name
 
         // Define variables here. Runs once during the sketch holder setup
@@ -20,11 +20,14 @@ class DayX extends Day {
 
         this.upperDowner - 0;
         this.eyeShake = 0;
+        this.eyeSpeed = 0;
         
         this.hangOut = false; 
+        this.lockOpacity = 0;
 
         this.showClock = false;
         this.clockFont = null;
+        this.clockOpacity = 0;
 
         //eye variables
         this.eyeWidth = 1;
@@ -67,8 +70,11 @@ class DayX extends Day {
         this.frameCount = 0;
 
         this.hangOut = false;
+        this.lockOpacity = 0;
 
         this.showClock = false;
+
+        this.clockOpacity = 0;
 
         for (let i = 0; i < 11; i++) {
             this.hiddenImages[i] = loadImage("../assets/dayX/skyline" + str(i) + ".png")
@@ -96,6 +102,7 @@ class DayX extends Day {
         this.OuterEye();
 
         this.displayClock();
+        this.displayLock();
 
         this.frameCount++;
     }
@@ -111,6 +118,7 @@ class DayX extends Day {
 
         this.upperDowner = random(-1, 1);
         this.eyeShake = random(-1, 1);
+        this.eyeSpeed = random(-1, 1);
 
         this.eyeWidth = width * 1.55 * random(0.9, 1.1);
         this.eyeHeight = height * 1.1 * random(0.9, 1.1);
@@ -160,8 +168,8 @@ class DayX extends Day {
             x = mouseX;
             y = mouseY;
 
-            x = constrain(x, width/8 * 2, width/8 * 6);
-            y = constrain(y, height/2 - (this.eyeHeight / 15), height/2 + (this.eyeHeight / 15));
+            x = constrain(x, width/2 - (this.eyeWidth / 5), width/2 + (this.eyeWidth / 5));
+            y = constrain(y, height/2 - (this.eyeHeight / 12), height/2 + (this.eyeHeight / 12));
 
             this.wanderX = x;
             this.wanderY = y;
@@ -182,12 +190,12 @@ class DayX extends Day {
 
         if(this.eyeShake > 0)
         {
-            x = x + (random(-10, 10) * this.upperDowner);
-            y = y + (random(-10, 10) * this.upperDowner);
+            x = x + (random(-10, 10) * this.eyeShake);
+            y = y + (random(-10, 10) * this.eyeShake);
         }
         
-        this.pupilX = lerp(this.pupilX, x, 0.075 + (0.065 * this.upperDowner));
-        this.pupilY = lerp(this.pupilY, y, 0.075 + (0.065 * this.upperDowner));
+        this.pupilX = lerp(this.pupilX, x, 0.075 + (0.065 * this.eyeSpeed));
+        this.pupilY = lerp(this.pupilY, y, 0.075 + (0.065 * this.eyeSpeed));
     }
 
     //GRAPHICS DRAWING
@@ -277,14 +285,20 @@ class DayX extends Day {
     {
         if(!this.showClock)
         {
+            this.clockOpacity = 0;
             return;
+        }
+
+        else if(this.clockOpacity < 255)
+        {
+            this.clockOpacity = lerp(this.clockOpacity, 255, 0.05);
         }
 
         textFont(this.clockFont);
         textSize(44);
         textAlign(CENTER, CENTER);
-        fill(200, 150, 75);
-        stroke(125, 50, 25);
+        fill(255, 255, 255, this.clockOpacity);
+        stroke(125, 125, 125, this.clockOpacity);
         strokeWeight(2.5);
         
         if(hour() < 10) 
@@ -313,6 +327,23 @@ class DayX extends Day {
         }
     }
 
+    displayLock()
+    {
+        if(!this.hangOut)
+        {
+            return;
+        }
+
+        fill(150);
+        noStroke();
+        rect(662.5, 25, 25, 25);
+
+        noFill();
+        stroke(150);
+        strokeWeight(5);
+        ellipse(675, 25, 20, 20);
+    }
+
     //INPUTS
 
     mousePressed() 
@@ -337,11 +368,6 @@ class DayX extends Day {
     }
 
     //SET FUNCTIONS
-    setIrisFrame()
-    {
-        
-    }
-
     setBlinkFrame()
     {
         this.blinkFrame = int(this.frameCount + this.blinkLength + random(225, 375) - (125 * this.upperDowner));
@@ -355,9 +381,8 @@ class DayX extends Day {
     setWanderTarget()
     {
     
-        this.wanderX = random(width/8 * 2, width/8 * 6);
-        this.wanderY = random(height/2 - (this.eyeHeight / 15), height/2 + (this.eyeHeight / 15));
-    
+        this.wanderX = random(width/2 - (this.eyeWidth / 5), width/2 + (this.eyeWidth / 5));
+        this.wanderY = random(height/2 - (this.eyeHeight / 12), height/2 + (this.eyeHeight / 12));
         this.setWanderFrame();
     }
 }
